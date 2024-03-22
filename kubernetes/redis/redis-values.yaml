@@ -1,0 +1,12 @@
+slaveCount: 1
+
+networkPolicy:
+  enabled: false
+  allowExternal: true
+
+password:
+  existingSecret: app-secret
+  existingSecretPasswordKey: redis-password
+
+persistence:
+  enabled: false

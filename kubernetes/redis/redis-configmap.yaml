@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: key-value-store-redis-config
+data:
+  REDIS_HOST: key-value-store-redis-master
+  REDIS_PORT: "6379"
+  REDIS_DB: "0"

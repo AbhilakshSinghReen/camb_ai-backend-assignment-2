@@ -1,0 +1,11 @@
+FROM python:3.8-slim
+
+WORKDIR /app
+
+COPY requirements.worker.txt /app/
+
+RUN pip install --default-timeout=100 --no-cache-dir -r requirements.worker.txt
+
+COPY . /app
+
+CMD ["huey_consumer.py", "src.tasks.huey"]

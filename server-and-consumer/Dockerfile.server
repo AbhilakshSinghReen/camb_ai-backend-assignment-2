@@ -1,0 +1,11 @@
+FROM python:3.8-slim
+
+WORKDIR /app
+
+COPY requirements.server.txt /app/
+
+RUN pip install --default-timeout=100 --no-cache-dir -r requirements.server.txt
+
+COPY . /app
+
+CMD ["uvicorn", "src.app:app", "--port=8000", "--host=0.0.0.0"]
