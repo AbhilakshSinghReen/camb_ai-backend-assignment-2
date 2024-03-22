@@ -11,7 +11,7 @@ app = FastAPI()
 @app.post("/api/tasks/add")
 def add_task():
     new_task_id = generate_task_id()
-    update_task_progress(new_task_id, 0, 0)
+    update_task_progress(new_task_id, 0, 0, status="Queued")
 
     long_task(new_task_id)
 

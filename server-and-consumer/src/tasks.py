@@ -31,8 +31,9 @@ def get_task_progress(task_id):
     return json_loads(progress_str)
 
 
-def update_task_progress(task_id, time_elapsed, progress_percentage):
+def update_task_progress(task_id, time_elapsed, progress_percentage, status="Processing"):
     task_progress = {
+        'status': status,
         'timeElapsed': str(round(time_elapsed, 4)),
         'progress': str(round(progress_percentage, 4)),
     }
@@ -82,4 +83,4 @@ def long_task(task_id: str):
             mark_task_as_failed(task_id, time_elapsed, progress_percentage)
     
     time_elapsed = time() - start_time
-    update_task_progress(task_id, time_elapsed, 100)
+    update_task_progress(task_id, time_elapsed, 100, status="Completed")
