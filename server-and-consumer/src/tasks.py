@@ -84,3 +84,7 @@ def long_task(task_id: str):
     
     time_elapsed = time() - start_time
     update_task_progress(task_id, time_elapsed, 100, status="Completed")
+
+
+if __name__ == "__main__":
+    print("foo")
