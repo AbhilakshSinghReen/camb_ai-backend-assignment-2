@@ -1,13 +1,9 @@
 import http from "k6/http";
-import exec from "k6/execution";
-import redis from "k6/experimental/redis";
 import { sleep, check } from "k6";
 
-const redisClient = new redis.Client("redis://localhost:6379");
-const tasksSetName = "tests-tasks-in-progress";
 const completedTaskRemoveProbability = 0.25;
 
-export async function addTask() {
+async function addTask() {
   const response = http.post("http://localhost:8000/api/tasks/add");
 
   check(response, {
@@ -25,24 +21,13 @@ export async function addTask() {
   });
 
   const newTaskId = responseData.result.id;
-  await redisClient.sadd(tasksSetName, newTaskId);
-  console.log(`Added task to store: ${newTaskId}`);
+  console.log(`Added task: ${newTaskId}`);
 
-  sleep(3);
+  return newTaskId;
 }
 
-export async function getTaskStatus() {
-  const allTaskIds = await redisClient.smembers(tasksSetName);
-  if (allTaskIds.length === 0) {
-    exec.test.abort()
-    sleep(1);
-    return;
-  }
-
-  const randomFetchedTaskId = await redisClient.srandmember(tasksSetName);
-  console.log(`Fetched task from store: ${randomFetchedTaskId}`);
-
-  const response = http.get(`http://localhost:8000/api/tasks/status/${randomFetchedTaskId}`);
+async function getTaskStatus(taskId) {
+  const response = http.get(`http://localhost:8000/api/tasks/status/${taskId}`);
 
   check(response, {
     "status code 200": (res) => res.status === 200,
@@ -61,20 +46,24 @@ export async function getTaskStatus() {
       typeof resData.result !== "undefined" && typeof resData.result.progress.timeElapsed === "string",
   });
 
+  console.log(`Fetched task: ${taskId}`);
+
   console.log("    ... Progress: " + responseData.result.progress.progress);
 
-    //   Remove the task based on some probability
-    if (
-      (responseData.result.progress.status === "Completed" || responseData.result.progress.status === "Failed") &&
-      Math.random() <= completedTaskRemoveProbability
-    ) {
-      await redisClient.srem(tasksSetName, randomFetchedTaskId);
-      console.log(`    ... Removed task from store: ${randomFetchedTaskId}`);
-    }
-
-  sleep(0.5);
+  return responseData.result.progress.status;
 }
 
-export async function teardown() {
-  await redisClient.del(tasksSetName);
+export async function addTaskAndQueryStatus() {
+  const newTaskId = await addTask();
+  sleep(2);
+
+  while (true) {
+    const taskStatus = await getTaskStatus(newTaskId);
+
+    if (taskStatus === "Completed" && Math.random() <= completedTaskRemoveProbability) {
+      console.log("    ... Completed.");
+      break;
+    }
+    sleep(1);
+  }
 }
