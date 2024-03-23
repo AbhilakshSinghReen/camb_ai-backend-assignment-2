@@ -7,9 +7,9 @@ from huey import RedisHuey
 from .redis_client import redis_client
 
 
-redis_host = "localhost" # environ["REDIS_HOST"]
+REDIS_HOST = environ["REDIS_HOST"]
 
-huey = RedisHuey("entrypoint", host=redis_host)
+huey = RedisHuey("entrypoint", host=REDIS_HOST)
 
 task_status_map_key = "long_tasks"
 task_length = 100_000_000

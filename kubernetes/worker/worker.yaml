@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-worker
+      component: api-worker
+  template:
+    metadata:
+      labels:
+        app: api-worker
+        component: api-worker
+    spec:
+      containers:
+      - name: worker
+        image: abhilakshsinghreen/long-task-api-worker:latest
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: camb-ai-redis-config

@@ -1,0 +1,27 @@
+services:
+  redis:
+    image: redis:7.2.4-alpine
+    network_mode: host
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  long-task-api-server:
+    image: abhilakshsinghreen/long-task-api-server
+    environment:
+      - REDIS_HOST=localhost
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - METRICS_PORT=9001
+    network_mode: host
+  long-task-api-worker:
+    image: abhilakshsinghreen/long-task-api-worker
+    environment:
+      - REDIS_HOST=localhost
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+    network_mode: host
+    depends_on:
+      redis:
+        condition: service_healthy

@@ -1,45 +1,54 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: camb-ai-api-server
+  name: api-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: camb-ai-api-server
-      component: camb-ai-api-server
+      app: api-server
+      component: api-server
   template:
     metadata:
       labels:
-        app: camb-ai-api-server
-        component: camb-ai-api-server
+        app: api-server
+        component: api-server
     spec:
       containers:
-      - name: camb-ai-server
-        image: abhilakshsinghreen/key-value-store-api-server:latest
+      - name: server
+        image: abhilakshsinghreen/long-task-api-server:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
-        resources:
-          limits:
-            cpu: 100m
-            memory: 256Mi
-          requests:
-            cpu: 100m
-            memory: 256Mi
+        - containerPort: 9001
         envFrom:
         - configMapRef:
             name: camb-ai-redis-config
+        - configMapRef:
+            name: api-server-config
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: camb-ai-api-server-service
+  name: api-server-service
 spec:
   selector:
-    app: camb-ai-api-server
-    component: camb-ai-api-server
+    app: api-server
+    component: api-server
   ports:
     - protocol: TCP
       port: 8000
       targetPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-server-metrics-service
+spec:
+  selector:
+    app: api-server
+    component: api-server
+  ports:
+    - protocol: TCP
+      port: 9001
+      targetPort: 9001

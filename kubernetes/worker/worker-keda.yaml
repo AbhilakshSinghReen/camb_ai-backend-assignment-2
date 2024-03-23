@@ -1,0 +1,27 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: api-worker-scaler
+spec:
+  scaleTargetRef:
+    deploymentName: api-worker
+  pollingInterval: 10
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  triggers:
+  - type: redis
+    metadata:
+      hostFromEnv: 
+        name: REDIS_HOST
+        valueFrom:
+          configMapKeyRef:
+            name: camb-ai-redis-config
+            key: REDIS_HOST
+      portFromEnv:
+        name: REDIS_PORT
+        valueFrom:
+          configMapKeyRef:
+            name: camb-ai-redis-config
+            key: REDIS_PORT
+      queueName: huey.redis.entrypoint
+      queueLength: "3"  # Scale when the list length exceeds 5

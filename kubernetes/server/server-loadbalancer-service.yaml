@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: camb-ai-api-server-loadbalancer-service
+  name: api-server-loadbalancer-service
 spec:
   selector:
-    app: camb-ai-api-server
+    app: api-server
   ports:
     - port: 8000
       targetPort: 8000

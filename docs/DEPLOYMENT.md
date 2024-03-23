@@ -1,8 +1,14 @@
 kubectl create namespace camb-ai
+kubectl get all -n camb-ai
 
 # Redis
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
+
+kubectl apply \
+  -n camb-ai \
+  -f kubernetes/redis/redis-configmap.yaml
+
 helm upgrade --install \
   -n camb-ai \
   camb-ai-redis \
@@ -10,9 +16,27 @@ helm upgrade --install \
   --values kubernetes/redis/redis-values.yaml \
   --set auth.enabled=false
 
+
+
+# Server
 kubectl apply \
   -n camb-ai \
-  -f kubernetes/redis/redis-configmap.yaml
+  -f kubernetes/server/server-configmap.yaml
+
+kubectl apply \
+  -n camb-ai \
+  -f kubernetes/server/server.yaml
+
+kubectl apply \
+  -n camb-ai \
+  -f kubernetes/server/server-loadbalancer-service.yaml
+
+# Worker
+kubectl apply \
+  -n camb-ai \
+  -f kubernetes/worker/worker.yaml
+
+##################################
 
 # Loki Stack
 helm repo add grafana https://grafana.github.io/helm-charts
