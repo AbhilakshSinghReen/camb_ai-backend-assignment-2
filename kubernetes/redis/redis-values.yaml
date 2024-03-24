@@ -1,4 +1,4 @@
-slaveCount: 1
+slaveCount: 0
 
 networkPolicy:
   enabled: false

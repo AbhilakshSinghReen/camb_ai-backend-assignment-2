@@ -52,23 +52,28 @@ helm repo add grafana https://grafana.github.io/helm-charts
 helm repo update
 helm upgrade --install \
   -n keda \
-  loki-stack grafana/loki-stack \
-  --values kubernetes/loki/values.yaml 
+  monitoring-stack prometheus-community/kube-prometheus-stack \
+  --values kubernetes/monitoring-stack/monitoring-values.yaml
+
+helm upgrade --install \
+  -n keda \
+  promtail grafana/promtail \
+  --values kubernetes/monitoring-stack/promtail-values.yaml
+
+helm upgrade --install \
+  -n keda \
+  loki grafana/loki-distributed
 
 # Get Grafana password
 kubectl get secret \
   -n keda \
-  loki-stack-grafana \
+  monitoring-stack-grafana \
   -o jsonpath="{.data.admin-password}" \
   | base64 --decode ; echo
 
 # Port forward Grafana
 kubectl port-forward \
   -n keda \
-  service/loki-stack-grafana \
+  service/monitoring-stack-grafana \
   3000:80
 
-# Server
-kubectl apply -n keda -f kubernetes/server/server.yaml
-kubectl apply -n keda -f kubernetes/server/server-loadbalancer-service.yaml
-# Add HPA

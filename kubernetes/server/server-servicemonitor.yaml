@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: api-server
+  labels:
+    name: api-server
+spec:
+  selector:
+    matchLabels:
+      name: api-server
+  endpoints:
+  - port: m-http
+    path: /metrics
+  namespaceSelector:
+    matchNames:
+     - keda
