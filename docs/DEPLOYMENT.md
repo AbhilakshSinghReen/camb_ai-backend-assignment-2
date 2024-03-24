@@ -1,9 +1,12 @@
 # Deploy on Kubernetes
 ## Prerequisites
-In order to proceed with deployment on your Kubernetes cluster, you need to have a K8s Cluster up an running. For the purpose of this guide, I will be using `minikube`.
-Apart from this, you should also have `kubectl` and `helm` installed.
+To proceed with the deployment, the following prerequisites are required:
+1) A `Kubernetes` Cluster - for this guide, I will be using [minikube](https://minikube.sigs.k8s.io/docs/start/).
+2) [Kubectl](https://kubernetes.io/docs/tasks/tools/)
+3) [Helm](https://helm.sh/docs/intro/install/)
+4) [K6](https://k6.io/docs/get-started/installation/) - `K6` is a tool by Grafana Labs that we will be using for load testing.
+
 It is also recommended to have `KEDA` enabled on your K8s cluster. However, if you're following along using `minikube`, we will be installing KEDA as we proceed.
-For testing, `K6`.
 
 ## Get the Code
 Clone this repository <br>
@@ -18,7 +21,7 @@ cd camb_ai-backend-assignment-2
 
 ## Deployment
 ### Setup K8s namespace
-To manage the resouces of our project, we'll be creating a K8s namespace called `keda`.
+To manage the resources of our project, we'll be creating a K8s namespace called `keda`.
 ```
 kubectl create namespace keda
 ```
@@ -41,7 +44,7 @@ helm repo update
 
 Create the ConfigMap for Redis.
 ```
-kubectl --namespace keda apply -filename kubernetes/redis/redis-configmap.yaml
+kubectl --namespace keda apply --filename kubernetes/redis/redis-configmap.yaml
 ```
 
 Install the help chart. The installation uses values defined in `kubernetes/redis/redis-values.yaml`
@@ -80,12 +83,12 @@ And finally, we create a LoadBalancer Service for the server so that we can acce
 kubectl --namespace keda apply --filename kubernetes/server/server-loadbalancer-service.yaml
 ```
 
-The API Server exposes `Prometheus` metrics on a different port that the API (9001 as specified in the ConfigMap). This is described in more detail in the `ARCHITECTURE.md`.
+The API Server exposes `Prometheus` metrics on a different port than the API (9001 as specified in the ConfigMap). This is described in more detail in the `ARCHITECTURE.md`.
 Let us port forward and see if the metrics are being exposed.
 
 Run the following command to map port 9001 of your local machine to port 9001 of the metrics service.
 ```
-kubectl port-forward service/api-server-metrics-service 9001:9001 -n keda
+kubectl --namespace keda port-forward service/api-server-metrics 9001:9001
 ```
 
 Then, head to `http://localhost:9001/metrics` in your browser. You should see some Prometheus metrics being displayed.

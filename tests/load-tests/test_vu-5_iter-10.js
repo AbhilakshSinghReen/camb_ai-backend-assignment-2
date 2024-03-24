@@ -8,7 +8,7 @@ export const options = {
       exec: "addTaskAndQueryStatus",
       executor: "shared-iterations",
       vus: 5,
-      iterations: 2,
+      iterations: 10,
     },
   },
 };
