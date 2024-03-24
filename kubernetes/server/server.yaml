@@ -30,7 +30,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: api-server-service
+  name: api-server
 spec:
   selector:
     app: api-server
@@ -43,7 +43,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: api-server-metrics-service
+  name: api-server-metrics
 spec:
   selector:
     app: api-server
