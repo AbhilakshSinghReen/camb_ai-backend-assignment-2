@@ -23,7 +23,7 @@ spec:
         - containerPort: 9001
         envFrom:
         - configMapRef:
-            name: camb-ai-redis-config
+            name: keda-redis-config
         - configMapRef:
             name: api-server-config
 ---

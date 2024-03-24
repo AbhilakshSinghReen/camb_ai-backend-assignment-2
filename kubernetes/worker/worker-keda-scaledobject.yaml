@@ -1,0 +1,17 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: api-worker-scaler
+spec:
+  scaleTargetRef:
+    name: api-worker
+  pollingInterval: 10
+  cooldownPeriod: 10
+  minReplicaCount: 1
+  maxReplicaCount: 5
+  triggers:
+  - type: redis
+    metadata:
+      address: "keda-redis-master:6379"
+      listName: huey.redis.entrypoint
+      listLength: "3"

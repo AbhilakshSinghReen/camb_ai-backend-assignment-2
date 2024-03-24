@@ -1,8 +1,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: camb-ai-redis-config
+  name: keda-redis-config
 data:
-  REDIS_HOST: camb-ai-redis-master
+  REDIS_HOST: keda-redis-master
   REDIS_PORT: "6379"
   REDIS_DB: "0"
