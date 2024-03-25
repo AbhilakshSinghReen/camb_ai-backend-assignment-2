@@ -40,6 +40,8 @@ loki:
     tag: 2.9.3
   persistence:
     enabled: false
+    # enabled: true
+    # size: 1Gi
 
 promtail:
     enabled: true
