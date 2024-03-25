@@ -9,3 +9,4 @@ Unable to connect to Loki
 https://github.com/grafana/loki/issues/11893
 First, check if Loki works in your Web Browser
 
+Telegram bot DNS error

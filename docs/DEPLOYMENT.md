@@ -4,9 +4,12 @@ To proceed with the deployment, the following prerequisites are required:
 1) A `Kubernetes` Cluster - for this guide, I will be using [minikube](https://minikube.sigs.k8s.io/docs/start/).
 2) [Kubectl](https://kubernetes.io/docs/tasks/tools/)
 3) [Helm](https://helm.sh/docs/intro/install/)
-4) [K6](https://k6.io/docs/get-started/installation/) - `K6` is a tool by Grafana Labs that we will be using for load testing.
+4) Your Kubernetes Cluster should have a Default Storage Class.
+5) [K6](https://k6.io/docs/get-started/installation/) - `K6` is a tool by Grafana Labs that we will be using for load testing.
 
 It is also recommended to have `KEDA` enabled on your K8s cluster. However, if you're following along using `minikube`, we will be installing KEDA as we proceed.
+
+
 
 ## Get the Code
 Clone this repository <br>
@@ -25,7 +28,7 @@ To manage the resources of our project, we'll be creating a K8s namespace called
 ```
 kubectl create namespace keda
 ```
-
+The `TROUBLESHOOTING.md` discusses why I've chosen to call this namespace `keda` and the issue faced with `DNS` in K8s.
 
 ### Setup KEDA
 (You don't need to do this if you already have KEDA on your K8s Cluster.)
@@ -34,7 +37,7 @@ kubectl apply --filename https://github.com/kedacore/keda/releases/download/v2.1
 ```
 
 ### Setup Redis
-For running Redis, in our cluster, we'll be using the Helm chart provided by Bitnami.
+For running Redis in our cluster, we'll be using the Helm chart provided by Bitnami.
 
 Add the Bitnami repo to Helm.
 ```
@@ -122,6 +125,12 @@ To keep things organized, we put all the monitoring-related resources in a separ
 kubectl create namespace keda-monitoring
 ```
 
+Add the Grafana Helm Repo
+```
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+```
+
 Install the Loki-Stack (with Prometheus)
 ```
 helm --namespace keda-monitoring upgrade --install monitoring-stack grafana/loki-stack --values kubernetes/monitoring-stack/monitoring-values.yaml
@@ -164,7 +173,7 @@ Port forward Prometheus
 kubectl -n keda-monitoring port-forward service/monitoring-stack-prometheus-server 9090:80
 ```
 
-Check Promethus configuration:
+Check Prometheus configuration:
 1) Head to `http://localhost:9090/targets` and see if the `long_task_api_server` target has been registered.
 2) Head to `http://localhost:9090/alerts` and see if the `worker_max_replicas_reached` alert has been registered.
 
@@ -193,5 +202,3 @@ After another 30 seconds, the alert should be in the `Firing` state.
 Once, this happens, you should receive a message on Telegram.
 
 As the test completes, after a few minutes, the workers should scale down and the alert should go back into the `Inactive` state.
-
-
