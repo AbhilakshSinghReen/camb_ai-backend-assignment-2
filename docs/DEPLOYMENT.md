@@ -127,15 +127,18 @@ Install the Loki-Stack (with Prometheus)
 helm --namespace keda-monitoring upgrade --install monitoring-stack grafana/loki-stack --values kubernetes/monitoring-stack/monitoring-values.yaml
 ```
 
+Create the LoadBalancer Service for Grafana
+```
+kubectl --namespace keda-monitoring apply --filename kubernetes/monitoring-stack/grafana-loadbalancer-service.yaml
+```
+
+
 Get Grafana Password
 ```
 kubectl --namespace keda-monitoring get secret monitoring-stack-grafana --output jsonpath="{.data.admin-password}" | base64 --decode ; echo
 ```
 
-Port forward Grafana and Prometheus
-```
-kubectl -n keda-monitoring port-forward service/monitoring-stack-grafana 3000:80
-```
+Port forward Prometheus
 ```
 kubectl -n keda-monitoring port-forward service/monitoring-stack-prometheus-server 9090:80
 ```
