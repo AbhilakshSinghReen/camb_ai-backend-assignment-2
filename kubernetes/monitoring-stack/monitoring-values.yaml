@@ -21,6 +21,18 @@ prometheus:
         - targets: ['api-server-metrics.keda:9001']
           labels:
             application: 'api-server'
+  serverFiles:
+    alerting_rules.yml:
+      groups:
+        - name: worker_max_replicas_reached
+          rules:
+          - alert: worker_max_replicas_reached
+            expr: count(kube_pod_info{created_by_kind="ReplicaSet", namespace="keda"}) == 8
+            for: 30s
+            labels:
+              severity: page
+            annotations:
+              summary: Max replicas of worker pod have been reached. It will not scale any higher.
 
 loki:
   enabled: true

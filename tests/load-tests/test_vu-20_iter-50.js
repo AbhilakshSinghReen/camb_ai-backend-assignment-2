@@ -1,4 +1,4 @@
-// 5 VUs making 10 Shared Iters
+// 20 VUs making 50 Shared Iters
 
 export { addTaskAndQueryStatus } from "./common.js";
 
@@ -7,8 +7,8 @@ export const options = {
     addTaskAndQueryStatus: {
       exec: "addTaskAndQueryStatus",
       executor: "shared-iterations",
-      vus: 5,
-      iterations: 10,
+      vus: 20,
+      iterations: 50,
     },
   },
 };

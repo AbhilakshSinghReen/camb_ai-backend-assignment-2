@@ -105,7 +105,7 @@ In order to load test the application and validate KEDA, we'll be using some tes
 
 In a new terminal, run the following command to observe the pods created/destroyed.
 ```
-kubectl --namespace keda get pods --watch
+watch -n 1 kubectl --namespace keda get pods
 ```
 
 In another new terminal, run the following command to start the basic load test. The `ARCHITECTURE.md` describes the tests in more detail.
@@ -140,4 +140,32 @@ kubectl -n keda-monitoring port-forward service/monitoring-stack-grafana 3000:80
 kubectl -n keda-monitoring port-forward service/monitoring-stack-prometheus-server 9090:80
 ```
 
+Check Promethus configuration:
+1) Head to `http://localhost:9090/targets` and see if the `long_task_api_server` target has been registered.
+2) Head to `http://localhost:9090/alerts` and see if the `worker_max_replicas_reached` alert has been registered.
 
+### Load Testing KEDA and Prometheus Alert Trigger
+For running the test, you should have `minikube tunnel` running in a terminal.
+In order to access Prometheus in the Browser, you should Port Forward to the Prometheus Server service.
+```
+kubectl -n keda-monitoring port-forward service/monitoring-stack-prometheus-server 9090:80
+```
+
+In a new terminal, run the following command to observe the pods created/destroyed.
+```
+watch -n 1 kubectl --namespace keda get pods
+```
+
+And, in one more terminal, navigate to the project directory and run the following command to perform a load test:
+```
+k6 run tests/load-tests/test_vu-20_iter-20.js
+```
+
+Once the tests have started, you should see 5 worker pods created in the keda namespace.
+
+Head to `http://localhost:9090/alerts`, after a couple of minutes, the `worker_max_replicas_reached` alert should move into the `Pending` state.
+After another 30 seconds, the alert should be in the `Firing` state.
+
+<!-- Visualing this alert in Grafana -->
+
+As the test completes, after a few minutes, the workers should scale down and the alert should go back into the `Inactive` state.
