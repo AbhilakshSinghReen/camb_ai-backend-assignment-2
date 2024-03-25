@@ -40,3 +40,9 @@ loki:
     tag: 2.9.3
   persistence:
     enabled: false
+
+promtail:
+    enabled: true
+    config:
+      clients:
+        - url: http://{{ .Release.Name }}-loki:3100/loki/api/v1/push
