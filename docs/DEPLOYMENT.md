@@ -113,7 +113,7 @@ watch -n 1 kubectl --namespace keda get pods
 
 In another new terminal, run the following command to start the basic load test. The `ARCHITECTURE.md` describes the tests in more detail.
 ```
-k6 run tests/load-tests/test_vu-5_iter-2.js
+k6 run tests/load-tests/test_vu-5_iter-10.js
 ```
 
 As the test proceeds, new pods with the prefix `api-worker` should be created. And, a few minutes after the completion of the test, all `api-worker` pods except one should have terminated.
@@ -162,7 +162,7 @@ Create the Deployment and Service
 kubectl --namespace keda-monitoring apply --filename kubernetes/monitoring-stack/prom-alert-manager-webhooks.yaml
 ```
 
-#### Testing Setup
+#### Testing the Monitoring Setup
 Get Grafana Password
 ```
 kubectl --namespace keda-monitoring get secret monitoring-stack-grafana --output jsonpath="{.data.admin-password}" | base64 --decode ; echo

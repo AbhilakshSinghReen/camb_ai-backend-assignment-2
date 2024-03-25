@@ -64,6 +64,6 @@ export async function addTaskAndQueryStatus() {
       console.log("    ... Completed.");
       break;
     }
-    sleep(30);
+    sleep(1);
   }
 }
