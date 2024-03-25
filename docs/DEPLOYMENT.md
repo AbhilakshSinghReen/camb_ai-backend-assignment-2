@@ -116,3 +116,28 @@ k6 run tests/load-tests/test_vu-5_iter-2.js
 As the test proceeds, new pods with the prefix `api-worker` should be created. And, a few minutes after the completion of the test, all `api-worker` pods except one should have terminated.
 
 ## Monitoring Setup
+### Create Monitoring K8s namespace
+To keep things organized, we put all the monitoring-related resources in a separate K8s namespace called `keda-monitoring`.
+```
+kubectl create namespace keda-monitoring
+```
+
+Install the Loki-Stack (with Prometheus)
+```
+helm --namespace keda-monitoring upgrade --install monitoring-stack grafana/loki-stack --values kubernetes/monitoring-stack/monitoring-values.yaml
+```
+
+Get Grafana Password
+```
+kubectl --namespace keda-monitoring get secret monitoring-stack-grafana --output jsonpath="{.data.admin-password}" | base64 --decode ; echo
+```
+
+Port forward Grafana and Prometheus
+```
+kubectl -n keda-monitoring port-forward service/monitoring-stack-grafana 3000:80
+```
+```
+kubectl -n keda-monitoring port-forward service/monitoring-stack-prometheus-server 9090:80
+```
+
+

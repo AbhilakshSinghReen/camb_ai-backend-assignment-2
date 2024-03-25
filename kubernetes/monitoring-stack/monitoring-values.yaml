@@ -1,14 +1,28 @@
-prometheus:
-  prometheusSpec:
-    serviceMonitorSelectorNilUsesHelmValues: false
-    serviceMonitorSelector: {}
-    serviceMonitorNamespaceSelector: {}
-
 grafana:
-  sidecar:
-    datasources:
-      defaultDatasourceEnabled: true
-  additionalDataSources:
-    - name: Loki
-      type: loki
-      url: http://loki-loki-distributed-query-frontend.monitoring:3100
+  enabled: true
+  service:
+    type: ClusterIP
+
+prometheus:
+  enabled: true
+  alertmanager:
+    persistentVolume:
+      enabled: false
+  server:
+    service:
+      type: ClusterIP
+    persistentVolume:
+      enabled: false
+  extraScrapeConfigs: |
+    - job_name: long-task-api-server
+      metrics_path: '/metrics'
+      scrape_interval: 5s
+      static_configs:
+        - targets: ['api-server-metrics.keda:9001']
+          labels:
+            application: 'api-server'
+
+loki:
+  enabled: true
+  persistence:
+    enabled: false
