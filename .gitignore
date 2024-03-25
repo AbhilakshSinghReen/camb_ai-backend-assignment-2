@@ -8,4 +8,7 @@
 
 **/.dockerignore
 
+**/node_modules
+**/.env
+
 **/*.log

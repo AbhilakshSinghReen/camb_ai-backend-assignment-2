@@ -1,7 +1,7 @@
 import http from "k6/http";
 import { sleep, check } from "k6";
 
-const completedTaskRemoveProbability = 0.25;
+const completedTaskRemoveProbability = 2;
 
 async function addTask() {
   const response = http.post("http://localhost:8000/api/tasks/add");
@@ -64,6 +64,6 @@ export async function addTaskAndQueryStatus() {
       console.log("    ... Completed.");
       break;
     }
-    sleep(1);
+    sleep(30);
   }
 }

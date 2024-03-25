@@ -132,7 +132,28 @@ Create the LoadBalancer Service for Grafana
 kubectl --namespace keda-monitoring apply --filename kubernetes/monitoring-stack/grafana-loadbalancer-service.yaml
 ```
 
+#### Prometheus Alert Manager Webhook
+Setup the ConfigMap, Secret, Deployment, and Service for the Alert Manager Webhook
+Setup the Config Map
+```
+kubectl --namespace keda-monitoring apply --filename kubernetes/monitoring-stack/prom-alert-manager-webhooks-configmap.yaml
+```
 
+Create the Secret directly through Kubectl
+```
+kubectl --namespace keda-monitoring create secret generic prom-alertmanager-webhooks-secret --from-literal=TELEGRAM_BOT_TOKEN=YOUR_TELEGRAM_BOT_TOKEN --from-literal=TELEGRAM_RECEIVER_USER_ID=YOUR_TELEGRAM_RECEIVER_USER_ID
+```
+Or, create a Secret using the file.
+```
+kubectl --namespace keda-monitoring apply --filename kubernetes/monitoring-stack/prom-alert-manager-webhooks-secret.yaml
+```
+
+Create the Deployment and Service
+```
+kubectl --namespace keda-monitoring apply --filename kubernetes/monitoring-stack/prom-alert-manager-webhooks.yaml
+```
+
+#### Testing Setup
 Get Grafana Password
 ```
 kubectl --namespace keda-monitoring get secret monitoring-stack-grafana --output jsonpath="{.data.admin-password}" | base64 --decode ; echo
@@ -169,6 +190,8 @@ Once the tests have started, you should see 5 worker pods created in the keda na
 Head to `http://localhost:9090/alerts`, after a couple of minutes, the `worker_max_replicas_reached` alert should move into the `Pending` state.
 After another 30 seconds, the alert should be in the `Firing` state.
 
-<!-- Visualing this alert in Grafana -->
+Once, this happens, you should receive a message on Telegram.
 
 As the test completes, after a few minutes, the workers should scale down and the alert should go back into the `Inactive` state.
+
+

@@ -8,6 +8,21 @@ prometheus:
   alertmanager:
     persistentVolume:
       enabled: false
+    config:
+      global:
+        resolve_timeout: 5m
+      route:
+        group_by: ['alertname']
+        group_wait: 5s
+        group_interval: 5s
+        repeat_interval: 30s
+        receiver: 'webhook'
+
+      receivers:
+      - name: 'webhook'
+        webhook_configs:
+        - url: 'http://localhost:5000/webhooks/max-workers-reached?scaler=KEDA&namespace=keda&deployment=api-worker&numWorkers=5'
+    
   server:
     service:
       type: ClusterIP
@@ -33,6 +48,17 @@ prometheus:
               severity: page
             annotations:
               summary: Max replicas of worker pod have been reached. It will not scale any higher.
+    
+    alertmanager.yml:
+      global:
+        resolve_timeout: 5m
+      route:
+        receiver: webhook_receiver
+      receivers:
+        - name: webhook_receiver
+          webhook_configs:
+            - send_resolved: true
+              url: 'http://api-server.keda:8000/docs'
 
 loki:
   enabled: true

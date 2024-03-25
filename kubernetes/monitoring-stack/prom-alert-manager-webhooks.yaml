@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prom-alertmanager-webhooks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prom-alertmanager-webhooks
+      component: prom-alertmanager-webhooks
+  template:
+    metadata:
+      labels:
+        app: prom-alertmanager-webhooks
+        component: prom-alertmanager-webhooks
+    spec:
+      containers:
+      - name: server
+        image: abhilakshsinghreen/prom-alertmanager-webhooks:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        envFrom:
+        - configMapRef:
+            name: prom-alertmanager-webhooks-config
+        - secretRef:
+            name: prom-alertmanager-webhooks-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prom-alertmanager-webhooks
+spec:
+  selector:
+    app: prom-alertmanager-webhooks
+    component: prom-alertmanager-webhooks
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000

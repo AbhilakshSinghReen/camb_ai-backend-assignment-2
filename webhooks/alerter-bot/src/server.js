@@ -1,19 +1,21 @@
-const dotenv = require("dotenv")
+// const dotenv = require("dotenv")
 const TelegramBot = require("node-telegram-bot-api")
 const express = require('express');
 const dns = require("node:dns")
+const bodyParser = require('body-parser');
 
 dns.setDefaultResultOrder("ipv4first");
-dotenv.config();
+// dotenv.config();
 
 const port = process.env.PORT;
 const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN;
 const telegramReceiverUserId = process.env.TELEGRAM_RECEIVER_USER_ID;
 
-const telegramBot = new TelegramBot(telegramBotToken, { polling: true });
+const telegramBot = new TelegramBot(telegramBotToken);
 const app = express();
+app.use(bodyParser.json());
 
-app.get('/webhooks/max-workers-reached', (req, res) => {
+app.post('/webhooks/max-workers-reached', (req, res) => {
   const { scaler, namespace, deployment, numWorkers } = req.query;
 
   console.log("Received max-workers-reached webhook.")
@@ -32,7 +34,7 @@ app.get('/webhooks/max-workers-reached', (req, res) => {
   message += `Deployment: ${namespace}.${deployment}` + "\n"
   message += `Num Workers: ${numWorkers}`
 
-  telegramBot.sendMessage(telegramReceiverUserId, message);
+  telegramBot.sendMessage(telegramReceiverUserId, "foo");
 
   res.status(200).send('Webhook received successfully.');
 });
