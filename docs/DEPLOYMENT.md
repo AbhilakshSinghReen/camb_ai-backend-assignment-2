@@ -168,6 +168,8 @@ Get Grafana Password
 kubectl --namespace keda-monitoring get secret monitoring-stack-grafana --output jsonpath="{.data.admin-password}" | base64 --decode ; echo
 ```
 
+Next head to `http://localhost:3000/connections/datasources`. You should see `Loki` and `Prometheus` listed. It is a good practice to open up both of them and Test using the `Test` button at the bottom.
+
 Port forward Prometheus
 ```
 kubectl -n keda-monitoring port-forward service/monitoring-stack-prometheus-server 9090:80
