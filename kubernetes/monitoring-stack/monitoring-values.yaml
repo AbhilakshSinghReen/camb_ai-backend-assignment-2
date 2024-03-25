@@ -17,11 +17,10 @@ prometheus:
         group_interval: 5s
         repeat_interval: 30s
         receiver: 'webhook'
-
       receivers:
       - name: 'webhook'
         webhook_configs:
-        - url: 'http://localhost:5000/webhooks/max-workers-reached?scaler=KEDA&namespace=keda&deployment=api-worker&numWorkers=5'
+        - url: 'http://prom-alertmanager-webhooks:5000/webhooks/max-workers-reached?scaler=KEDA&namespace=keda&deployment=api-worker&numWorkers=5'
     
   server:
     service:
