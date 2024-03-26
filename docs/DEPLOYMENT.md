@@ -86,6 +86,11 @@ And finally, we create a LoadBalancer Service for the server so that we can acce
 kubectl --namespace keda apply --filename kubernetes/server/server-loadbalancer-service.yaml
 ```
 
+HorizontalPodAutoscaler (Optional)
+```
+kubectl apply -n key-value-store -f kubernetes/server/server-hpa.yaml
+```
+
 The API Server exposes `Prometheus` metrics on a different port than the API (9001 as specified in the ConfigMap). This is described in more detail in the `ARCHITECTURE.md`.
 Let us port forward and see if the metrics are being exposed.
 
