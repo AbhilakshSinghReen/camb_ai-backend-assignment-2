@@ -16,12 +16,16 @@ task_length = 100_000_000
 task_num_intervals = 100
 
 
-def validate_task_id(task_id):
+def validate_task_id(task_id: str) -> bool:
+    "Checks if a task id exists in Redis."
+
     progress_str = redis_client.hget(task_status_map_key, task_id)
     return progress_str is not None
 
 
-def get_task_progress(task_id):
+def get_task_progress(task_id: str) -> dict:
+    "Check if the task exists, and return its progress."
+
     progress_str = redis_client.hget(task_status_map_key, task_id)
     if progress_str is None:
         return {
@@ -31,7 +35,9 @@ def get_task_progress(task_id):
     return json_loads(progress_str)
 
 
-def update_task_progress(task_id, time_elapsed, progress_percentage, status="Processing"):
+def update_task_progress(task_id:str, time_elapsed:float, progress_percentage:float, status:str="Processing") -> None:
+    "Construct the task progress dict for a task and updates it into the DB."
+
     task_progress = {
         'status': status,
         'timeElapsed': str(round(time_elapsed, 4)),
@@ -42,7 +48,8 @@ def update_task_progress(task_id, time_elapsed, progress_percentage, status="Pro
     redis_client.hset(task_status_map_key, task_id, task_progress_str)
 
 
-def mark_task_as_failed(task_id, time_elapsed=None, progress_percentage=None):
+def mark_task_as_failed(task_id: str, time_elapsed:float=None, progress_percentage:float=None) -> None:
+    "Marks a task as failed."
     task_progress = get_task_progress(task_id)
 
     if time_elapsed is not None:
@@ -61,6 +68,8 @@ def mark_task_as_failed(task_id, time_elapsed=None, progress_percentage=None):
 
 @huey.task()
 def long_task(task_id: str):
+    "Count from 0 to 100 million, make progress updates after every one million."
+
     progress_update_interval = task_length / task_num_intervals
 
     start_time = time()
@@ -84,7 +93,3 @@ def long_task(task_id: str):
     
     time_elapsed = time() - start_time
     update_task_progress(task_id, time_elapsed, 100, status="Completed")
-
-
-if __name__ == "__main__":
-    print("foo")

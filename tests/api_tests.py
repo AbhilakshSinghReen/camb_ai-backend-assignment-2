@@ -9,6 +9,8 @@ class TestAPIs(unittest.TestCase):
     float_resolution = 1e-4
 
     def test_add_task(self):
+        "Added task to the queue."
+
         response = requests.post(f"{self.base_url}/api/tasks/add")
 
         self.assertEqual(response.status_code, 200)
@@ -21,6 +23,8 @@ class TestAPIs(unittest.TestCase):
         self.assertEqual(response_data.get('result', {}).get('message', None), "Task queued.")
     
     def test_get_task_progress(self):
+        "Adds a task to the queue and repeatedly checks its progress until the task is completed."
+
         add_response = requests.post(f"{self.base_url}/api/tasks/add")
 
         self.assertEqual(add_response.status_code, 200)
@@ -64,6 +68,8 @@ class TestAPIs(unittest.TestCase):
             sleep(0.1)
 
     def test_get_invalid_task_progress(self):
+        "Tries to get the progress of a task that does not exist."
+        
         invalid_task_id = str(time())
 
         response = requests.get(f"{self.base_url}/api/tasks/status/{invalid_task_id}")
